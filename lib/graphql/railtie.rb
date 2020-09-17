@@ -1,8 +1,15 @@
 # frozen_string_literal: true
 
-
 module GraphQL
   class Railtie < Rails::Railtie
+    config.before_configuration do
+      Language::Parser.cache ||= begin
+        path = Rails.root.join('tmp/cache/graphql')
+        path.mkpath
+        Language::Cache.new(path)
+      end
+    end
+
     rake_tasks do
       # Defer this so that you only need the `parser` gem when you _run_ the upgrader
       def load_upgraders
